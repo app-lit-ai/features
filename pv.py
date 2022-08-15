@@ -1,12 +1,10 @@
 import numpy as np
 
 def feature(adapter, index, vars=None, other_features=None):
-    window = 10
-    lookback_index = index - (window - 1)
-    if lookback_index < 0:
+    count = vars['count'] or 64
+    df = adapter.get_dataframe(index, "tick", count + 1)
+    if len(df) < count:
         return []
-
-    df = adapter.get_dataframe(lookback_index, index + 1)
 
     feature.sample = df[['Price', 'Volume']].astype(np.float32).values
 
@@ -18,9 +16,12 @@ feature.sample = np.array((10, 2))
 
 def main():
     from lit.data import loader
-    rds_path = "/opt/lit/refined_data/TSLA.O_2010.json"
-    adapter = loader.load_adapter(rds_path, limit=20000)
-    data = feature(adapter, 5000)
+    rds = {
+        "adapter": { "name": "reuters_csv", "path": "/data/raw/test.csv" },
+        "features": [ { "count": 512 } ]
+    }
+    adapter = loader.load_adapter(json=rds, limit=20000)
+    data = feature(adapter, 5000, adapter.rds['features'][0])
     print(data)
 
 if __name__ == '__main__':
