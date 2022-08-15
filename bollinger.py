@@ -1,27 +1,37 @@
 import numpy as np
 
-def get_sma(prices, rate):
-    return prices.rolling(rate).mean()
-
-def get_bollinger_bands(prices, rate):
-    sma = get_sma(prices, rate)
-    std = prices.rolling(rate).std()
-    bollinger_up = sma + std * 2 # top band
-    bollinger_down = sma - std * 2 # bottom band
-    return bollinger_up, bollinger_down
+#TODO quadruple check for lookahead bias
 
 def feature(adapter, index, vars=None, other_features=None):
-    window = vars['window'] or 100
-    lookback_index = index - (window - 1)
-    if lookback_index < 0:
+    rate = vars['rate'] or 20
+    count = vars['count'] or 60
+    size = vars['size'] or 1
+    unit = vars['unit'] or 'sec'
+
+    df = adapter.get_dataframe(index, unit, (count * size) + 1)
+    if len(df[rate:]) < count:
         return []
 
-    df = adapter.get_dataframe(lookback_index, index + 1)
+    window = df.Price.rolling(rate)
+    sma, std = window.mean(), window.std()
+    up, down = sma + std * 2, sma - std * 2
 
-    rate = vars['rate'] or 20
-    up, down = get_bollinger_bands(df.Price, rate)
-    feature.sample = np.swapaxes(np.asarray([up[rate:], down[rate:]]) - df.Price.iloc[-1], 0, 1)
+    feature.sample = np.swapaxes(np.asarray([up[rate:], down[rate:]]), 0, 1)
 
     price_offset = df.Price.iloc[-1]
     feature.sample = feature.sample - price_offset
+
     return feature.sample[:]
+
+def main():
+    from lit.data import loader
+    rds = {
+        "adapter": { "name": "reuters_csv", "path": "/data/raw/test.csv", "resolution": 1 },
+        "features": [ { "rate": 20, "count": 60, "size": 1, "unit": "sec" } ]
+    }
+    adapter = loader.load_adapter(json=rds, limit=20000)
+    data = feature(adapter, 5000, adapter.rds['features'][0])
+    print(data)
+
+if __name__ == '__main__':
+    main()
