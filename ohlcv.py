@@ -12,15 +12,18 @@ def feature(adapter, index, vars=None, other_features=None):
     df = df.set_index('Date-Time')
     resample_unit = f"{size}{adapter.translate_resample_unit(unit)}"
     
-    ohlc = df.resample(resample_unit)['Price'].ohlc().values
+    resampled = df.resample(resample_unit)
+    ohlc = resampled['Price'].ohlc().values
     if len(ohlc) < count:
         return []
     ohlc -= price_offset
     
-    vol = np.expand_dims(df.resample(resample_unit)['Volume'].sum().values, axis=1)
-    max_vol = np.expand_dims(df.resample(resample_unit)['Volume'].max().values, axis=1)
+    vol = np.expand_dims(resampled['Volume'].sum().values, axis=1)
+    max_vol = np.expand_dims(resampled['Volume'].max().values, axis=1)
+    vwap = np.expand_dims(resampled['Market VWAP'].mean(), axis=1)
+    vwap -= vwap[-1]
 
-    feature.sample = np.hstack([ohlc, vol, max_vol])[-count:]
+    feature.sample = np.hstack([ohlc, vol, max_vol, vwap])[-count:]
 
     return feature.sample[:]
 
