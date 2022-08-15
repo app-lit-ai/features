@@ -27,8 +27,11 @@ feature.sample = None
 
 def main():
     from lit.data import loader
-    rds_path = "/opt/lit/refined_data/TSLA.O_2010.json"
-    adapter = loader.load_adapter(rds_path, limit=20000)
+    rds = {
+        "adapter": { "name": "reuters_csv", "path": "/data/raw/test.csv", "resolution": 1 },
+        "features": [ { "count": 60, "size": 1, "unit": "sec" } ]
+    }
+    adapter = loader.load_adapter(json=rds, limit=20000)
     data = feature(adapter, 5000, adapter.rds['features'][0])
     print(data)
 
