@@ -23,7 +23,7 @@ def feature(adapter, index, vars=None, other_features=None):
     size = vars['size'] or 1
     unit = vars['unit'] or 'sec'
 
-    df = adapter.get_dataframe(index, unit, (count * size) + 1)
+    df = adapter.get_dataframe(index, count, unit, size)
     df = df.set_index('Date-Time')
     resample_unit = adapter.translate_resample_unit(unit)    
     resampled = df.resample(f"{size}{resample_unit}")

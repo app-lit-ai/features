@@ -8,7 +8,7 @@ def feature(adapter, index, vars=None, other_features=None):
     size = vars['size'] or 1
     unit = vars['unit'] or 'sec'
 
-    df = adapter.get_dataframe(index, unit, (count * size) + 1)
+    df = adapter.get_dataframe(index, count, unit, size)
     if len(df[rate:]) < count:
         return []
 
