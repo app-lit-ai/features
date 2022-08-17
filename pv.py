@@ -2,7 +2,7 @@ import numpy as np
 
 def feature(adapter, index, vars=None, other_features=None):
     count = vars['count'] or 64
-    df = adapter.get_dataframe(index, "tick", count + 1)
+    df = adapter.get_dataframe(index, count)
     if len(df) < count:
         return []
 
