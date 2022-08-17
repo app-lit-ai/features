@@ -36,7 +36,7 @@ def feature(adapter, index, vars=None, other_features=None):
     vwap -= vwap[-1]
 
     rsi_ema = np.expand_dims(calc_rsi(price, lambda s: s.ewm(span=rate).mean(), rate), axis=1)[-count:]
-    rsi = rsi_ema - rsi_ema.max()
+    rsi = rsi_ema / 100
     # rsi_sma = calc_rsi(price, lambda s: s.rolling(rate).mean(), rate)
     # rsi_rma = calc_rsi(price, lambda s: s.ewm(alpha=1 / rate).mean(), rate) 
 
