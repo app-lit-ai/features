@@ -15,7 +15,7 @@ def feature(adapter, index, vars=None, other_features=None):
     if len(df) < count:
         return []
 
-    if not feature.sample:
+    if feature.sample is None:
         feature.sample = df.values[-count:]
     else:
         feature.sample[:] = df.values[-count:]
