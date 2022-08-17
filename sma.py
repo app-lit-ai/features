@@ -27,6 +27,8 @@ def feature(adapter, index, vars=None, other_features=None):
     df = df.set_index('Date-Time')
     resample_unit = adapter.translate_resample_unit(unit)    
     resampled = df.resample(f"{size}{resample_unit}")
+    if len(resampled) < count:
+        return []
 
     price = resampled['Price'].mean()
     sma = np.expand_dims(price.rolling(rate).mean(), axis=1)[-count:]
