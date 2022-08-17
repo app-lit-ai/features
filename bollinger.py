@@ -16,7 +16,7 @@ def feature(adapter, index, vars=None, other_features=None):
     sma, std = window.mean(), window.std()
     up, down = sma + std * 2, sma - std * 2
 
-    feature.sample = np.swapaxes(np.asarray([up[rate:], down[rate:]]), 0, 1)
+    feature.sample = np.swapaxes(np.asarray([down[rate:], sma[rate:], up[rate:]]), 0, 1)
 
     price_offset = df.Price.iloc[-1]
     feature.sample = feature.sample - price_offset
