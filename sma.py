@@ -33,29 +33,40 @@ def feature(adapter, index, vars=None, other_features=None):
         return []
 
     price = resampled['Price'].mean()
+    price = price[price.notna()]
     sma = np.expand_dims(price.rolling(rate).mean(), axis=1)[-count:]
     sma -= sma[-1]
     
-    vwap = np.expand_dims(resampled['Market VWAP'].mean().rolling(rate).mean(), axis=1)[-count:]
+    market_vwap = resampled['Market VWAP'].mean()
+    market_vwap = market_vwap[market_vwap.notna()]
+    vwap = np.expand_dims(market_vwap.rolling(rate).mean(), axis=1)[-count:]
     vwap -= vwap[-1]
 
     rsi_ema = np.expand_dims(calc_rsi(price, lambda s: s.ewm(span=rate).mean(), rate), axis=1)[-count:]
     rsi = rsi_ema / 100
+
     # rsi_sma = calc_rsi(price, lambda s: s.rolling(rate).mean(), rate)
     # rsi_rma = calc_rsi(price, lambda s: s.ewm(alpha=1 / rate).mean(), rate) 
 
-    feature.sample = np.hstack([sma, vwap, rsi])
+    if feature.sample is None:
+        feature.sample = np.hstack([sma, vwap, rsi])
+    else:
+        feature.sample[:] = np.hstack([sma, vwap, rsi])
+
+    assert not np.isnan(feature.sample[:]).any(), "Found NaN in feature."
 
     return feature.sample[:]
+
+feature.sample = None
 
 def main():
     from lit.data import loader
     rds = {
-        "adapter": { "name": "reuters", "path": "/data/raw/test.csv" },
-        "features": [ { "rate": 5, "count": 60, "size": 1, "unit": "sec" } ]
+        "adapter": { "name": "reuters", "path": "/data/raw/TSLA.O_2010.csv", "resolution": 200 },
+        "features": [ { "rate": 5, "count": 10, "size": 1, "unit": "day" } ]
     }
     adapter = loader.load_adapter(json=rds)
-    data = feature(adapter, 5000, adapter.rds['features'][0])
+    data = feature(adapter, 453000, adapter.rds['features'][0])
     print(data)
 
 if __name__ == '__main__':

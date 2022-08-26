@@ -8,20 +8,36 @@ def feature(adapter, index, vars=None, other_features=None):
     size = vars['size'] or 1
     unit = vars['unit'] or 'sec'
 
-    df = adapter.get_dataframe(index, count, unit, size)
+    df = adapter.get_dataframe(index, count * 2, unit, size)
     if len(df[rate:]) < count:
         return []
 
-    window = df.Price.rolling(rate)
-    sma, std = window.mean(), window.std()
+    df = df.set_index('Date-Time')
+    resample_unit = adapter.translate_resample_unit(unit)    
+    resampled = df.resample(f"{size}{resample_unit}")
+    if len(resampled) < count:
+        return []
+
+    price = resampled['Price'].mean()
+    price = price[price.notna()]
+
+    window = price.rolling(rate)
+    sma = np.expand_dims(window.mean(), axis=1)[-count:]
+    std = np.expand_dims(window.std(), axis=1)[-count:]
     up, down = sma + std * 2, sma - std * 2
 
-    feature.sample = np.swapaxes(np.asarray([down[rate:], sma[rate:], up[rate:]]), 0, 1)
+    if feature.sample is None:
+        feature.sample = np.swapaxes(np.asarray([down[rate:], up[rate:]]), 0, 1)
+    else:
+        feature.sample[:] = np.swapaxes(np.asarray([down[rate:], up[rate:]]), 0, 1)
 
-    price_offset = df.Price.iloc[-1]
-    feature.sample = feature.sample - price_offset
+    feature.sample = feature.sample - df.Price.iloc[-1]
+
+    assert not np.isnan(feature.sample[:]).any(), "Found NaN in feature."
 
     return feature.sample[:]
+
+feature.sample = None
 
 def main():
     from lit.data import loader
