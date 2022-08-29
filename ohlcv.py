@@ -15,20 +15,21 @@ def feature(adapter, index, vars=None, other_features=None):
     df = df.set_index('Date-Time')
     resample_unit = f"{size}{adapter.translate_resample_unit(unit)}"
     resampled = df.resample(resample_unit)
-    ohlc = resampled['Price'].ohlc().values
+    nans = resampled.Price.ohlc().isna().open.values
+    ohlc = resampled['Price'].ohlc()[~nans].values[-count:]
     if len(ohlc) < count:
         return []
 
     ohlc -= price_offset
-    vol = np.expand_dims(resampled['Volume'].sum().values, axis=1)
-    max_vol = np.expand_dims(resampled['Volume'].max().values, axis=1)
-    vwap = np.expand_dims(resampled['Market VWAP'].mean(), axis=1)
+    vol = np.expand_dims(resampled['Volume'].sum()[~nans].values[-count:], axis=1)
+    max_vol = np.expand_dims(resampled['Volume'].max()[~nans].values[-count:], axis=1)
+    vwap = np.expand_dims(resampled['Market VWAP'].mean()[~nans][-count:], axis=1)
     vwap -= vwap[-1]
 
     if feature.sample is None:
-        feature.sample = np.hstack([ohlc, vol, max_vol, vwap])[-count:]
+        feature.sample = np.hstack([ohlc, vol, max_vol, vwap])
     else:
-        feature.sample[:] = np.hstack([ohlc, vol, max_vol, vwap])[-count:]
+        feature.sample[:] = np.hstack([ohlc, vol, max_vol, vwap])
 
     return feature.sample[:]
 feature.sample = None
