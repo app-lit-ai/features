@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 
 #TODO quadruple check for lookahead bias
@@ -27,9 +28,9 @@ def feature(adapter, index, vars=None, other_features=None):
     up, down = sma + std * 2, sma - std * 2
 
     if feature.sample is None:
-        feature.sample = np.swapaxes(np.asarray([down[rate:], up[rate:]]), 0, 1)
+        feature.sample = np.swapaxes(np.asarray([down, up]), 0, 1)
     else:
-        feature.sample[:] = np.swapaxes(np.asarray([down[rate:], up[rate:]]), 0, 1)
+        feature.sample[:] = np.swapaxes(np.asarray([down, up]), 0, 1)
 
     feature.sample = feature.sample - df.Price.iloc[-1]
 
