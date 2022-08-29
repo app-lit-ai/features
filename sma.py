@@ -1,3 +1,4 @@
+import logging
 from typing import Callable
 import numpy as np
 import pandas as pd
@@ -53,7 +54,9 @@ def feature(adapter, index, vars=None, other_features=None):
     else:
         feature.sample[:] = np.hstack([sma, vwap, rsi])
 
-    assert not np.isnan(feature.sample[:]).any(), "Found NaN in feature."
+    if np.isnan(feature.sample[:]).any():
+        logging.warn(f"Found NaN in sma at index {index}.")
+        return []
 
     return feature.sample[:]
 

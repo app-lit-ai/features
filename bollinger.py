@@ -33,7 +33,9 @@ def feature(adapter, index, vars=None, other_features=None):
 
     feature.sample = feature.sample - df.Price.iloc[-1]
 
-    assert not np.isnan(feature.sample[:]).any(), "Found NaN in feature."
+    if np.isnan(feature.sample[:]).any():
+        logging.warn(f"Found NaN in bollinger at index {index}.")
+        return []
 
     return feature.sample[:]
 
