@@ -39,17 +39,30 @@ def feature(adapter, index, vars=None, other_features=None):
 def interrogate():
     return [
         { 
-            "name": "lookahead", 
-            "description": "How many ticks into the future to look ahead",
-            "type": "number"
+            "name": "risk", "type": "number",
+            "description": "How much can the price go down before a sale is forced."
         },
         {
-            "name": "another property name",
-            "description": "another description",
-            "type": "boolean"
+            "name": "reward", "type": "number",
+            "description": "At what price is a sale forced to take profit."
+        },
+        {
+            "name": "type", "type": "string",
+            "description": "One of two valid values: 'long' or 'short'"
+        },
+        {
+            "name": "count", "type": "number",
+            "description": "The number of bars to examine in the future for risk and reward thresholds."
+        },
+        {
+            "name": "size", "type": "number",
+            "description": "The size of each bar"
+        },
+        {
+            "name": "unit", "type": "string", 
+            "description": "The unit for each bar. Valid values are 'day', 'hour', 'minute', 'second'"
         }
     ]
-
 
 def main():
     from lit.data import loader
