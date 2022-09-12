@@ -1,3 +1,5 @@
+import argparse
+import time
 import numpy as np
 
 #TODO quadruple check for lookahead bias
@@ -7,42 +9,48 @@ def feature(adapter, index, vars=None, other_features=None):
     size = vars['size'] or 1
     unit = vars['unit'] or 'sec'
 
-    df = adapter.get_dataframe(index, count*2, unit, size)
-    if len(df) == 0:
+    data = adapter.get_bars(index, count, unit, size)
+    if len(data) != count:
         return []
 
-    price_offset = df.Price.iloc[-1]
-    df = df.set_index('Date-Time')
-    resample_unit = f"{size}{adapter.translate_resample_unit(unit)}"
-    resampled = df.resample(resample_unit)
-    nans = resampled.Price.ohlc().isna().open.values
-    ohlc = resampled['Price'].ohlc()[~nans].values[-count:]
-    if len(ohlc) < count:
-        return []
-
-    ohlc -= price_offset
-    vol = np.expand_dims(resampled['Volume'].sum()[~nans].values[-count:], axis=1)
-    max_vol = np.expand_dims(resampled['Volume'].max()[~nans].values[-count:], axis=1)
-    vwap = np.expand_dims(resampled['Market VWAP'].mean()[~nans][-count:], axis=1)
-    vwap -= vwap[-1]
+    price_offset = data[-1,3]
+    data -= price_offset
 
     if feature.sample is None:
-        feature.sample = np.hstack([ohlc, vol, max_vol, vwap])
+        feature.sample = data
     else:
-        feature.sample[:] = np.hstack([ohlc, vol, max_vol, vwap])
+        feature.sample[:] = data
 
     return feature.sample[:]
+
 feature.sample = None
 
 def main():
     from lit.data import loader
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--path', required=True, type=str)
+    args = parser.parse_args()
+
     rds = {
-        "adapter": { "name": "reuters", "path": "/data/raw/test.csv" },
-        "features": [ { "count": 60, "size": 1, "unit": "sec" } ]
+        "adapter": { "name": "reuters", "path": args.path },
+        "features": [ { "count": 10, "size": 1, "unit": "day" } ]
     }
     adapter = loader.load_adapter(json=rds)
-    data = feature(adapter, 5000, adapter.rds['features'][0])
-    print(data)
+
+    index = 800000
+    start = time.time()
+    data = len(feature(adapter, index, adapter.rds['features'][0])) # first get
+    print(f"{data} in {time.time() - start} seconds")
+    start = time.time()
+    r = range(index, index + 10000, 1000)
+    data = [len(feature(adapter, index, adapter.rds['features'][0])) for index in r] # walk the data
+    print(f"{data} in {time.time() - start} seconds")
+
+    start = time.time()
+    data = len(feature(adapter, index, adapter.rds['features'][0])) # get it again
+    print(f"{data} in {time.time() - start} seconds")
+
 
 if __name__ == '__main__':
     main()

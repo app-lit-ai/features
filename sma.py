@@ -2,10 +2,12 @@ import logging
 from typing import Callable
 import numpy as np
 import pandas as pd
+from numpy.lib.stride_tricks import sliding_window_view
 
 #TODO quadruple check for lookahead bias
 
-def calc_rsi(over: pd.Series, fn_roll: Callable, window_size) -> pd.Series:
+def calc_rsi(over: np.ndarray, fn_roll: Callable, window_size) -> pd.Series:
+    over = pd.Series(over)
     delta = over.diff()
     delta = delta[1:] 
     up, down = delta.clip(lower=0), delta.clip(upper=0).abs()
@@ -24,27 +26,30 @@ def feature(adapter, index, vars=None, other_features=None):
     size = vars['size'] or 1
     unit = vars['unit'] or 'sec'
 
-    df = adapter.get_dataframe(index, count * 2, unit, size)
-    if len(df) == 0:
-        return []
-    df = df.set_index('Date-Time')
-    resample_unit = adapter.translate_resample_unit(unit)    
-    resampled = df.resample(f"{size}{resample_unit}")
-    if len(resampled) < count:
+    data = adapter.get_bars(index, count+rate+1, unit, size)
+    if len(data) < count:
         return []
 
-    price = resampled['Price'].mean()
-    price = price[price.notna()]
-    sma = np.expand_dims(price.rolling(rate).mean(), axis=1)[-count:]
-    sma -= sma[-1]
-    
-    market_vwap = resampled['Market VWAP'].mean()
-    market_vwap = market_vwap[market_vwap.notna()]
-    vwap = np.expand_dims(market_vwap.rolling(rate).mean(), axis=1)[-count:]
-    vwap -= vwap[-1]
+    price_offset = data[-1,3]
+    window = sliding_window_view(data[:,3], window_shape=rate)
+    sma = np.mean(window, axis=1)
+    sma -= price_offset
+    sma = np.expand_dims(sma, axis=1)[-count:]
+    if sma.shape[0] < count:
+        return []
 
-    rsi_ema = np.expand_dims(calc_rsi(price, lambda s: s.ewm(span=rate).mean(), rate), axis=1)[-count:]
+    vwap_window = sliding_window_view(data[:,7], window_shape=rate)
+    vwap = np.mean(vwap_window, axis=1)
+    vwap -= data[-1, 7]
+    vwap = np.expand_dims(vwap, axis=1)[-count:]
+    if vwap.shape[0] < count:
+        return []
+
+
+    rsi_ema = np.expand_dims(calc_rsi(data[:,3], lambda s: s.ewm(span=rate).mean(), rate), axis=1)[-count:]
     rsi = rsi_ema / 100
+    if rsi.shape[0] < count:
+        return []
 
     # rsi_sma = calc_rsi(price, lambda s: s.rolling(rate).mean(), rate)
     # rsi_rma = calc_rsi(price, lambda s: s.ewm(alpha=1 / rate).mean(), rate) 
@@ -69,7 +74,7 @@ def main():
         "features": [ { "rate": 5, "count": 10, "size": 1, "unit": "day" } ]
     }
     adapter = loader.load_adapter(json=rds)
-    data = feature(adapter, 453000, adapter.rds['features'][0])
+    data = feature(adapter, 500000, adapter.rds['features'][0])
     print(data)
 
 if __name__ == '__main__':
