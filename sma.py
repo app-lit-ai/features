@@ -38,13 +38,12 @@ def feature(adapter, index, vars=None, other_features=None):
     if sma.shape[0] < count:
         return []
 
-    vwap_window = sliding_window_view(data[:,7], window_shape=rate)
+    vwap_window = sliding_window_view(data[:,8], window_shape=rate)
     vwap = np.mean(vwap_window, axis=1)
-    vwap -= data[-1, 7]
+    vwap -= data[-1, 8]
     vwap = np.expand_dims(vwap, axis=1)[-count:]
     if vwap.shape[0] < count:
         return []
-
 
     rsi_ema = np.expand_dims(calc_rsi(data[:,3], lambda s: s.ewm(span=rate).mean(), rate), axis=1)[-count:]
     rsi = rsi_ema / 100
@@ -70,11 +69,11 @@ feature.sample = None
 def main():
     from lit.data import loader
     rds = {
-        "adapter": { "name": "reuters", "path": "/data/raw/TSLA.O_2010.csv", "resolution": 200 },
-        "features": [ { "rate": 5, "count": 10, "size": 1, "unit": "day" } ]
+        "adapter": { "name": "reuters", "path": "/data/raw/TSLA.O_2010.csv", "resolution": 1 },
+        "features": [ { "rate": 10, "count": 10, "size": 1, "unit": "min" } ]
     }
     adapter = loader.load_adapter(json=rds)
-    data = feature(adapter, 500000, adapter.rds['features'][0])
+    data = feature(adapter, 550000, adapter.rds['features'][0])
     print(data)
 
 if __name__ == '__main__':
