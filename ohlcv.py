@@ -1,7 +1,3 @@
-import argparse
-import time
-import numpy as np
-
 #TODO quadruple check for lookahead bias
 
 def feature(adapter, index, vars=None, other_features=None):
@@ -28,29 +24,14 @@ feature.sample = None
 def main():
     from lit.data import loader
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--path', required=True, type=str)
-    args = parser.parse_args()
-
     rds = {
-        "adapter": { "name": "reuters", "path": args.path },
-        "features": [ { "count": 10, "size": 1, "unit": "day" } ]
+        "adapter": { "name": "reuters", "path": "/data/raw/TSLA.O_ALL.csv", "resolution": 1 },
+        "features": [ { "count": 50, "size": 1, "unit": "day" } ]
     }
     adapter = loader.load_adapter(json=rds)
 
-    index = 800000
-    start = time.time()
-    data = len(feature(adapter, index, adapter.rds['features'][0])) # first get
-    print(f"{data} in {time.time() - start} seconds")
-    start = time.time()
-    r = range(index, index + 10000, 1000)
-    data = [len(feature(adapter, index, adapter.rds['features'][0])) for index in r] # walk the data
-    print(f"{data} in {time.time() - start} seconds")
-
-    start = time.time()
-    data = len(feature(adapter, index, adapter.rds['features'][0])) # get it again
-    print(f"{data} in {time.time() - start} seconds")
-
+    index = 446443900
+    data = len(feature(adapter, index, adapter.rds['features'][0]))
 
 if __name__ == '__main__':
     main()
