@@ -5,7 +5,7 @@ SHAKE_TO_SECONDS = 10e8
 def feature(adapter, index, vars=None, other_features=None):
     type = vars.get('type')
     risk = vars.get('risk')
-    make = vars.get('make')
+    make = vars.get('reward')
     horizon = vars.get('horizon')
     return is_win(type[0], adapter.handle, index, risk, make, horizon, slippage=0)
 
