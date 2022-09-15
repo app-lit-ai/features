@@ -9,7 +9,7 @@ def feature(adapter, index, vars=None, other_features=None):
     horizon = vars.get('horizon')
     return is_win(type[0], adapter.handle, index, risk, make, horizon, slippage=0)
 
-def is_win(label_type, tick_file, sample_index, risk, reward, horizon_mins=None, slippage=0):
+def is_win(label_type, tick_file, sample_index, risk, reward, horizon=None, slippage=0):
     label_dict = {
         "s": is_short_rr_v8,
         "l": is_long_rr_v8,
@@ -19,7 +19,7 @@ def is_win(label_type, tick_file, sample_index, risk, reward, horizon_mins=None,
     if label_type.lower() == "t":
         return get_label(tick_file, sample_index, risk, reward)
     else:
-        return get_label(tick_file, sample_index, risk, reward, horizon_mins, slippage)
+        return get_label(tick_file, sample_index, risk, reward, horizon, slippage)
 
 
 def find_tick_stop(starting_pos, next_price, eof, target, stop_out):
@@ -126,10 +126,10 @@ def find_short_stop(tick_file, target, stop, current_position, end_of_horizon):
     
     return 0.0
 
-def is_long_rr_v8(tick_file, sample_index, risk, reward, horizon_mins, slippage=0):
+def is_long_rr_v8(tick_file, sample_index, risk, reward, horizon, slippage=0):
     accelerator = tick_file['accelerators']
     start_time = tick_file['timestamp'][sample_index] # timestamp of most recent tick
-    time_horizon = 60 * horizon_mins * SHAKE_TO_SECONDS
+    time_horizon = horizon * SHAKE_TO_SECONDS
     stop_time = start_time + time_horizon
     start_price = tick_file['Price'][sample_index] + slippage
     stop_out = start_price - risk + slippage
@@ -216,11 +216,11 @@ def is_long_rr_v8(tick_file, sample_index, risk, reward, horizon_mins, slippage=
         accelerator_index += 10
     return find_long_stop(tick_file, target, stop_out, accelerator_index, stop_time)
 
-def is_short_rr_v8(tick_file, sample_index, risk, reward, horizon_mins, slippage=0):
+def is_short_rr_v8(tick_file, sample_index, risk, reward, horizon, slippage=0):
 
     accelerator = tick_file['accelerators']
     start_time = tick_file['timestamp'][sample_index] #timestamp of most recent tick
-    time_horizon = 60 * horizon_mins * SHAKE_TO_SECONDS
+    time_horizon = horizon * SHAKE_TO_SECONDS
     stop_time = start_time + time_horizon
     start_price = tick_file['Price'][sample_index] - slippage
     stop_out = start_price + risk - slippage
