@@ -3,11 +3,10 @@ import numpy as np
 SHAKE_TO_SECONDS = 10e8
 
 def feature(adapter, index, vars=None, other_features=None):
-    type = vars.get('type')
-    risk = vars.get('risk')
-    make = vars.get('reward')
+    type = vars.get('type') # long or short
+    risk, reward = vars.get('risk'), vars.get('reward')
     horizon = vars.get('horizon')
-    return is_win(type[0], adapter.handle, index, risk, make, horizon, slippage=0)
+    return is_win(type[0], adapter.handle, index, risk, reward, horizon, slippage=0)
 
 def is_win(label_type, tick_file, sample_index, risk, reward, horizon=None, slippage=0):
     label_dict = {
