@@ -26,11 +26,11 @@ def find_tick_stop(starting_pos, next_price, eof, target, stop_out):
     current_position = starting_pos
     while not eof(current_position):
         if next_price(current_position) >= target:
-            return 1.0
+            return [1.0]
         if next_price (current_position) <= stop_out:
-            return 0.0
+            return [0.0]
         current_position += 1
-    return 0.0
+    return [0.0]
 
 def tick_rr_v8(tick_file, sample_index_in, risk, reward):
     accelerator = tick_file['accelerators']
@@ -95,17 +95,17 @@ def find_long_stop(tick_file, target, stop, current_position, end_of_horizon):
 
     while not eof(current_position):
         if get_time(current_position) >= end_of_horizon:
-            return 0.0
+            return [0.0]
 
         if next_price(current_position) >= target:
-            return 1.0
+            return [1.0]
 
         if next_price(current_position) <= stop:
-            return 0.0
+            return [0.0]
 
         current_position += 1
     
-    return 0.0
+    return [0.0]
 
 def find_short_stop(tick_file, target, stop, current_position, end_of_horizon):
     next_price = lambda x: tick_file['Price'][x]
@@ -114,17 +114,17 @@ def find_short_stop(tick_file, target, stop, current_position, end_of_horizon):
 
     while not eof(current_position):
         if get_time(current_position) >= end_of_horizon:
-            return 0.0
+            return [0.0]
 
         if next_price(current_position) <= target:
-            return 1.0
+            return [1.0]
 
         if next_price(current_position) >= stop:
-            return 0.0
+            return [0.0]
 
         current_position += 1
     
-    return 0.0
+    return [0.0]
 
 def is_long_rr_v8(tick_file, sample_index, risk, reward, horizon, slippage=0):
     accelerator = tick_file['accelerators']
