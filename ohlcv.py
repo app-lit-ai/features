@@ -10,7 +10,7 @@ def feature(adapter, index, vars=None, other_features=None):
         return []
 
     price_offset = data[-1,3]
-    data -= price_offset
+    data[:4] -= price_offset # price_open, price_high, price_low, price_close
 
     if feature.sample is None:
         feature.sample = data
