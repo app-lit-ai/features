@@ -38,13 +38,6 @@ def feature(adapter, index, vars=None, other_features=None):
     if sma.shape[0] < count:
         return []
 
-    vwap_window = sliding_window_view(data[:,8], window_shape=rate)
-    vwap = np.mean(vwap_window, axis=1)
-    vwap -= data[-1, 8]
-    vwap = np.expand_dims(vwap, axis=1)[-count:]
-    if vwap.shape[0] < count:
-        return []
-
     rsi_ema = np.expand_dims(calc_rsi(data[:,3], lambda s: s.ewm(span=rate).mean(), rate), axis=1)[-count:]
     rsi = rsi_ema / 100
     if rsi.shape[0] < count:
@@ -54,9 +47,9 @@ def feature(adapter, index, vars=None, other_features=None):
     # rsi_rma = calc_rsi(price, lambda s: s.ewm(alpha=1 / rate).mean(), rate) 
 
     if feature.sample is None:
-        feature.sample = np.hstack([sma, vwap, rsi])
+        feature.sample = np.hstack([sma, rsi])
     else:
-        feature.sample[:] = np.hstack([sma, vwap, rsi])
+        feature.sample[:] = np.hstack([sma, rsi])
 
     if np.isnan(feature.sample[:]).any():
         logging.warn(f"Found NaN in sma at index {index}.")
