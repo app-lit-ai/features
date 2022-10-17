@@ -52,11 +52,11 @@ feature.sample = None
 def main():
     from lit.data import loader
     rds = {
-        "adapter": { "name": "reuters", "path": "/data/raw/TSLA.O_2011.csv", "resolution": 1 },
-        "features": [ { "rate": 10, "count": 10, "size": 1, "unit": "min" } ]
+        "adapter": { "name": "reuters", "path": "/data/raw/TSLA.O_ALL.csv", "resolution": 1 },
+        "features": [ { "rate": 60, "count": 60, "size": 1, "unit": "sec" } ]
     }
     adapter = loader.load_adapter(json=rds)
-    data = feature(adapter, 550000, adapter.rds['features'][0])
+    data = feature(adapter, 100000, adapter.rds['features'][0])
     print(data)
 
 if __name__ == '__main__':
