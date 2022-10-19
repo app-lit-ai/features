@@ -1,9 +1,16 @@
 #TODO quadruple check for lookahead bias
 
+LAST_DATETIME, LAST_SAMPLE = {}, {}
 def feature(adapter, index, vars=None, other_features=None):
+    global LAST_DATETIME, LAST_SAMPLE
+    unit = vars['unit'] or 'sec'
+    dt = adapter.get_timestamp(index)
+    datetime = adapter.format_datetime(dt, unit)
+    if unit in LAST_DATETIME and datetime == LAST_DATETIME[unit]:
+        return LAST_SAMPLE[unit]
+
     count = vars['count'] or 60
     size = vars['size'] or 1
-    unit = vars['unit'] or 'sec'
 
     data = adapter.get_bars(index, count, unit, size)
     if len(data) != count:
@@ -16,6 +23,8 @@ def feature(adapter, index, vars=None, other_features=None):
         feature.sample = data
     else:
         feature.sample[:] = data
+
+    LAST_DATETIME[unit], LAST_SAMPLE[unit] = datetime, feature.sample
 
     return feature.sample[:]
 

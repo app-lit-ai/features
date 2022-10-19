@@ -20,11 +20,18 @@ def numpy_ewma_vectorized_v2(data, window):
     out = offset + cumsums*scale_arr[::-1]
     return out
 
+LAST_DATETIME, LAST_SAMPLE = {}, {}
 def feature(adapter, index, vars=None, other_features=None):
+    global LAST_DATETIME, LAST_SAMPLE
+    unit = vars['unit'] or 'sec'
+    dt = adapter.get_timestamp(index)
+    datetime = adapter.format_datetime(dt, unit)
+    if unit in LAST_DATETIME and datetime == LAST_DATETIME[unit]:
+        return LAST_SAMPLE[unit]
+
     rate = vars['rate'] or 20
     count = vars['count'] or 60
     size = vars['size'] or 1
-    unit = vars['unit'] or 'sec'
 
     data = adapter.get_bars(index, count+rate+1, unit, size)
     if len(data) < count:
@@ -44,6 +51,8 @@ def feature(adapter, index, vars=None, other_features=None):
     if np.isnan(feature.sample[:]).any():
         logging.warn(f"Found NaN in ema at index {index}.")
         return []
+
+    LAST_DATETIME[unit], LAST_SAMPLE[unit] = datetime, feature.sample
 
     return feature.sample[:]
 
