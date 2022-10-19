@@ -5,8 +5,7 @@ from numpy.lib.stride_tricks import sliding_window_view
 LAST_DATETIME, LAST_SAMPLE = None, None
 def feature(adapter, index, vars=None, other_features=None):
     global LAST_DATETIME, LAST_SAMPLE
-    df = adapter.get_dataframe(index, 1)
-    dt = df['Date-Time'][0]
+    dt = adapter.get_timestamp(index)
     datetime = f"{dt.year}-{dt.month}-{dt.day}T{dt.hour}:{dt.minute}"
     if datetime == LAST_DATETIME:
         return LAST_SAMPLE

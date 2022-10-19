@@ -23,8 +23,7 @@ LAST_DATE, LAST_SAMPLE = None, None
 def feature(adapter, index, vars=None, other_features=None):
 
     global LAST_DATE, LAST_SAMPLE
-    df = adapter.get_dataframe(index, 1)
-    dt = df['Date-Time'][0]
+    dt = adapter.get_timestamp(index)
     date = f"{dt.year}-{dt.month}-{dt.day}"
     if date == LAST_DATE:
         return LAST_SAMPLE
