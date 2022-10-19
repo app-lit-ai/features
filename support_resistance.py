@@ -79,6 +79,8 @@ def feature(adapter, index, vars=None, other_features=None):
 
     count, size, unit = 100, 1, "day"
     data_day = adapter.get_bars(index, count, unit, size)[:, 3]
+    if len(data_day) == 0:
+        return []
 
     feature.sample = np.asarray([ 
         get_support_resistance(data_day), 
