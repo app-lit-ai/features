@@ -2,8 +2,6 @@ import logging
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
 
-#TODO quadruple check for lookahead bias
-
 def feature(adapter, index, vars=None, other_features=None):
     rate = vars['rate'] or 20
     count = vars['count'] or 60
@@ -19,25 +17,25 @@ def feature(adapter, index, vars=None, other_features=None):
     l = data[:, 2]
 
     # compute
-    vwap_ben = np.cumsum(v*(h+l)/2) / np.cumsum(v)
-    vwap_ben -= vwap_ben[-1]
-    vwap_ben_window = sliding_window_view(vwap_ben, window_shape=rate)
-    vwap_ben_ma = np.mean(vwap_ben_window, axis=1)
+    vwap = np.cumsum(v*(h+l)/2) / np.cumsum(v)
+    vwap -= vwap[-1]
+    vwap_window = sliding_window_view(vwap, window_shape=rate)
+    vwap_ma = np.mean(vwap_window, axis=1)
 
     # shape
-    vwap_ben = vwap_ben[-count:]
-    if vwap_ben.shape[0] < count:
+    vwap = vwap[-count:]
+    if vwap.shape[0] < count:
         return []
 
-    vwap_ben_ma = vwap_ben_ma[-count:]
-    if vwap_ben_ma.shape[0] < count:
+    vwap_ma = vwap_ma[-count:]
+    if vwap_ma.shape[0] < count:
         return []
 
     # combine
     if feature.sample is None:
-        feature.sample = np.hstack([vwap_ben, vwap_ben_ma])
+        feature.sample = np.hstack([vwap, vwap_ma])
     else:
-        feature.sample[:] = np.hstack([vwap_ben, vwap_ben_ma])
+        feature.sample[:] = np.hstack([vwap, vwap_ma])
 
     return feature.sample[:]
 
