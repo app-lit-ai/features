@@ -2,36 +2,28 @@ import logging
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
 
-#TODO quadruple check for lookahead bias
-
-def get_crosses(diffs):
-    last_is_pos = diffs[0] >= 0
-    retval = 0
-    cross_index = -1
-    for i, diff in enumerate(diffs[1:]):
-        is_pos = diff >= 0
-        if is_pos != last_is_pos:
-            if is_pos:
-                retval = 1
-            else:
-                retval = -1
-            cross_index = i
-        last_is_pos = is_pos
-    return retval, (len(diffs[1:]) - cross_index)
-
-LAST_DATE, LAST_SAMPLE = None, None
+LAST_DATETIME, LAST_SAMPLE = None, None
 def feature(adapter, index, vars=None, other_features=None):
-
-    global LAST_DATE, LAST_SAMPLE
+    global LAST_DATETIME, LAST_SAMPLE
     df = adapter.get_dataframe(index, 1)
     dt = df['Date-Time'][0]
-    date = f"{dt.year}-{dt.month}-{dt.day}"
-    if date == LAST_DATE:
+    datetime = f"{dt.year}-{dt.month}-{dt.day}T{dt.hour}:{dt.minute}"
+    if datetime == LAST_DATETIME:
         return LAST_SAMPLE
 
     count, size, unit = 50, 1, "day"
     data_day = adapter.get_bars(index, count+(count-1), unit, size)
     if data_day.shape[0] < count+(count-1):
+        return []
+
+    count, size, unit = 24, 1, "hour"
+    data_hour = adapter.get_bars(index, count+(count-1), unit, size)
+    if data_hour.shape[0] < count+(count-1):
+        return []
+
+    count, size, unit = 60, 1, "min"
+    data_min = adapter.get_bars(index, count+(count-1), unit, size)
+    if data_min.shape[0] < count+(count-1):
         return []
 
     window = sliding_window_view(data_day[:,3], window_shape=50, axis=0)
@@ -46,17 +38,22 @@ def feature(adapter, index, vars=None, other_features=None):
     window = sliding_window_view(data_day[-9:,3], window_shape=5, axis=0)
     sma_5day = np.mean(window, axis=1)
 
+    window = sliding_window_view(data_hour[-47:,3], window_shape=24, axis=0)
+    sma_24hour = np.mean(window, axis=1)
+
+    window = sliding_window_view(data_min[-119:,3], window_shape=60, axis=0)
+    sma_60min = np.mean(window, axis=1)
+
+    fit = lambda x: np.polyfit(range(len(x)), x, deg=1)[0]
     feature.sample = np.asarray([
-        get_crosses((sma_5day - sma_10day[-5:])),
-        get_crosses((sma_5day - sma_20day[-5:])), get_crosses((sma_10day - sma_20day[-10:])),
-        get_crosses((sma_5day - sma_50day[-5:])), get_crosses((sma_10day - sma_50day[-10:])), get_crosses((sma_20day - sma_50day[-20:]))
+        fit(sma_60min), fit(sma_24hour), fit(sma_5day), fit(sma_10day), fit(sma_20day), fit(sma_50day)
     ]).flatten()
 
     if np.isnan(feature.sample[:]).any():
-        logging.warn(f"Found NaN in crosses at index {index}.")
+        logging.warn(f"Found NaN in trend at index {index}.")
         return []
 
-    LAST_DATE, LAST_SAMPLE = date, feature.sample
+    LAST_DATETIME, LAST_SAMPLE = datetime, feature.sample
 
     return feature.sample[:]
 
@@ -69,7 +66,7 @@ def main():
         "features": [ { } ]
     }
     adapter = loader.load_adapter(json=rds)
-    index = 1670003
+    index = 1100000
     data = feature(adapter, index, adapter.rds['features'][0])
     print(data)
 
