@@ -78,14 +78,15 @@ def feature(adapter, index, vars=None, other_features=None):
     price_offset = adapter.get_price(index)
 
     count, size, unit = 100, 1, "day"
-    data_day = adapter.get_bars(index, count, unit, size)[:, 3]
-    if len(data_day) == 0:
+    data_day = adapter.get_bars(index, count, unit, size)
+    if len(data_day) < count:
         return []
+    prices = data_day[:, 3]
 
     feature.sample = np.asarray([ 
-        get_support_resistance(data_day), 
-        get_support_resistance(data_day[-50:]),
-        get_support_resistance(data_day[-20:])
+        get_support_resistance(prices), 
+        get_support_resistance(prices[-50:]),
+        get_support_resistance(prices[-20:])
     ]).flatten() - price_offset
 
     LAST_DATE, LAST_SAMPLE = date, feature.sample
