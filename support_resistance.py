@@ -83,11 +83,15 @@ def feature(adapter, index, vars=None, other_features=None):
         return []
     prices = data_day[:, 3]
 
-    feature.sample = np.asarray([ 
-        get_support_resistance(prices), 
-        get_support_resistance(prices[-50:]),
-        get_support_resistance(prices[-20:])
-    ]).flatten() - price_offset
+    try:
+        feature.sample = np.asarray([ 
+            get_support_resistance(prices), 
+            get_support_resistance(prices[-50:]),
+            get_support_resistance(prices[-20:])
+        ]).flatten() - price_offset
+    except ValueError:
+        # either support or resistance is empty
+        return []
 
     LAST_DATE, LAST_SAMPLE = date, feature.sample
 
@@ -98,11 +102,11 @@ feature.sample = None
 def main():
     from lit.data import loader
     rds = {
-        "adapter": { "name": "reuters", "path": "/data/raw/TSLA.O_2011.csv", "resolution": 1 },
+        "adapter": { "name": "reuters", "path": "/data/raw/TSLA.O_ALL.csv", "resolution": 1 },
         "features": [ { } ]
     }
     adapter = loader.load_adapter(json=rds)
-    index = 1670003
+    index = 15054622
     data = feature(adapter, index, adapter.rds['features'][0])
     print(data)
 
