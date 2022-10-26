@@ -12,7 +12,8 @@ def feature(adapter, index, vars=None, other_features=None):
     count = vars['count'] or 60
     size = vars['size'] or 1
 
-    data = adapter.get_bars(index, count, unit, size)
+    data = adapter.get_bars(index, count, unit, size).copy()
+    data = data[:,:-1] # drop the reuters vwap to avoid accidentally using it later
     if len(data) != count:
         return []
 
