@@ -25,7 +25,7 @@ def feature(adapter, index, vars=None, other_features=None):
 
     # compute
     vwap = np.cumsum(v*(h+l)/2) / np.cumsum(v)
-    vwap -= vwap[-1]
+    # vwap -= vwap[-1]
     vwap_window = sliding_window_view(vwap, window_shape=rate)
     vwap_ma = np.mean(vwap_window, axis=1)
 

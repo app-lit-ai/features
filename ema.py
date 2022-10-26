@@ -37,9 +37,9 @@ def feature(adapter, index, vars=None, other_features=None):
     if len(data) < count:
         return []
 
-    price_offset = data[-1,3]
+    # price_offset = data[-1,3]
     ema = np.expand_dims(numpy_ewma_vectorized_v2(data[:,3], rate), axis=1)[-count:]
-    ema -= price_offset
+    # ema -= price_offset
     if ema.shape[0] < count:
         return []
 

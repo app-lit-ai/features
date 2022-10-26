@@ -30,10 +30,10 @@ def feature(adapter, index, vars=None, other_features=None):
     if len(data) < count:
         return []
 
-    price_offset = data[-1,3]
+    # price_offset = data[-1,3]
     window = sliding_window_view(data[:,3], window_shape=rate)
     sma = np.mean(window, axis=1)
-    sma -= price_offset
+    #sma -= price_offset
     sma = np.expand_dims(sma, axis=1)[-count:]
     if sma.shape[0] < count:
         return []

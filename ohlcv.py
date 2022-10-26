@@ -16,8 +16,8 @@ def feature(adapter, index, vars=None, other_features=None):
     if len(data) != count:
         return []
 
-    price_offset = data[-1,3]
-    data[:4] -= price_offset # price_open, price_high, price_low, price_close
+    # price_offset = data[-1,3]
+    # data[:, :4] -= price_offset # price_open, price_high, price_low, price_close
 
     if feature.sample is None:
         feature.sample = data

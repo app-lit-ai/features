@@ -14,7 +14,7 @@ def feature(adapter, index, vars=None, other_features=None):
     data = adapter.get_bars(index, count, unit, size)
     if len(data) != count:
         return []
-    price_offset = data[-1,3]
+    # price_offset = data[-1,3]
 
     window = sliding_window_view(data[:,3], window_shape=rate)
     sma = np.mean(window, axis=1)
@@ -26,7 +26,7 @@ def feature(adapter, index, vars=None, other_features=None):
     else:
         feature.sample[:] = np.swapaxes(np.asarray([down, up]), 0, 1)
 
-    feature.sample = feature.sample - price_offset
+    # feature.sample = feature.sample - price_offset
 
     if np.isnan(feature.sample[:]).any():
         logging.warn(f"Found NaN in bollinger at index {index}.")
