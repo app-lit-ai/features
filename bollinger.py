@@ -5,6 +5,14 @@ from numpy.lib.stride_tricks import sliding_window_view
 
 #TODO quadruple check for lookahead bias
 
+def interrogate():
+    return [
+        { "name": "rate", "type": "number" },
+        { "name": "count", "type": "number" },
+        { "name": "size", "type": "number" },
+        { "name": "unit", "type": "string" }
+    ]
+
 def feature(adapter, index, vars=None, other_features=None):
     rate = vars['rate'] or 20
     count = vars['count'] or 60

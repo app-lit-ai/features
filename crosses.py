@@ -3,6 +3,8 @@ import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
 
 #TODO quadruple check for lookahead bias
+def interrogate():
+    return [ ]
 
 def get_crosses(diffs):
     last_is_pos = diffs[0] >= 0

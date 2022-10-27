@@ -6,6 +6,14 @@ from numpy.lib.stride_tricks import sliding_window_view
 
 #TODO quadruple check for lookahead bias
 
+def interrogate():
+    return [
+        { "name": "rate", "type": "number" },
+        { "name": "count", "type": "number" },
+        { "name": "size", "type": "number" },
+        { "name": "unit", "type": "string" }
+    ]
+
 def calc_rsi(over: np.ndarray, fn_roll: Callable, window_size) -> pd.Series:
     over = pd.Series(over)
     delta = over.diff()

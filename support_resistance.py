@@ -4,6 +4,9 @@ from scipy.signal import savgol_filter
 from sklearn.linear_model import LinearRegression
 from math import sqrt
 
+def interrogate():
+    return [ ]
+
 # { "name": "support_resistance", "ds_name": "sr_100day", "rate": 100, "count": 100, "size": 1, "unit": "day", "enabled": true },
 # { "name": "support_resistance", "ds_name": "sr_50day", "rate": 50, "count": 50, "size": 1, "unit": "day", "enabled": true },
 # { "name": "support_resistance", "ds_name": "sr_20day", "rate": 20, "count": 20, "size": 1, "unit": "day", "enabled": true },

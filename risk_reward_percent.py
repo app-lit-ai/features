@@ -2,6 +2,14 @@ import numpy as np
 
 SHAKE_TO_SECONDS = 10e8
 
+def interrogate():
+    return [
+        { "name": "type", "type": "string" },
+        { "name": "risk", "type": "number" },
+        { "name": "reward", "type": "number" },
+        { "name": "horizon", "type": "number" }
+    ]
+
 def feature(adapter, index, vars=None, other_features=None):
     type = vars.get('type')
     risk, reward = vars.get('risk'), vars.get('reward')

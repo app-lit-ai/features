@@ -1,5 +1,14 @@
 import time
 
+def interrogate():
+    return [
+        { "name": "count", "type": "number" },
+        { "name": "size", "type": "number" },
+        { "name": "unit", "type": "string" }
+    ]
+
+
+
 def feature(adapter, index, vars=None, other_features=None):
     count = vars['count'] or 60
     size = vars['size'] or 1

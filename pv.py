@@ -1,5 +1,10 @@
 import numpy as np
 
+def interrogate():
+    return [
+        { "name": "count", "type": "number" }
+    ]
+
 def feature(adapter, index, vars=None, other_features=None):
     count = vars['count'] or 64
     df = adapter.get_dataframe(index, count)

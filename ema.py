@@ -3,6 +3,14 @@ import numpy as np
 
 #TODO quadruple check for lookahead bias
 
+def interrogate():
+    return [
+        { "name": "rate", "type": "number" },
+        { "name": "count", "type": "number" },
+        { "name": "size", "type": "number" },
+        { "name": "unit", "type": "string" }
+    ]
+
 def numpy_ewma_vectorized_v2(data, window):
 
     alpha = 2 /(window + 1.0)

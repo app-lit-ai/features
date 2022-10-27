@@ -1,5 +1,13 @@
 #TODO quadruple check for lookahead bias
 
+def interrogate():
+    return [
+        { "name": "count", "type": "number" },
+        { "name": "size", "type": "number" },
+        { "name": "unit", "type": "string" }
+    ]
+
+
 LAST_DATETIME, LAST_SAMPLE = {}, {}
 def feature(adapter, index, vars=None, other_features=None):
     global LAST_DATETIME, LAST_SAMPLE

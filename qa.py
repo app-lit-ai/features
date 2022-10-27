@@ -1,5 +1,10 @@
 import numpy as np
 
+def interrogate():
+    return [
+        { "name": "field", "type": "string" }
+    ]
+
 def feature(adapter, index, vars=None, other_features=None):
     field = vars['field']
     nonzeros = np.count_nonzero(other_features[field])
