@@ -2,9 +2,6 @@ import logging
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
 
-def interrogate():
-    return [ ]
-
 LAST_DATETIME, LAST_SAMPLE = None, None
 def feature(adapter, index, vars=None, other_features=None):
     global LAST_DATETIME, LAST_SAMPLE

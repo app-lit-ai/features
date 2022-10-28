@@ -4,14 +4,6 @@ from scipy.signal import savgol_filter
 from sklearn.linear_model import LinearRegression
 from math import sqrt
 
-def interrogate():
-    return [ ]
-
-# { "name": "support_resistance", "ds_name": "sr_100day", "rate": 100, "count": 100, "size": 1, "unit": "day", "enabled": true },
-# { "name": "support_resistance", "ds_name": "sr_50day", "rate": 50, "count": 50, "size": 1, "unit": "day", "enabled": true },
-# { "name": "support_resistance", "ds_name": "sr_20day", "rate": 20, "count": 20, "size": 1, "unit": "day", "enabled": true },
-# { "name": "support_resistance", "ds_name": "sr_10day", "rate": 10, "count": 10, "size": 1, "unit": "day", "enabled": true },
-# { "name": "support_resistance", "ds_name": "sr_5day", "rate": 5, "count": 5, "size": 1, "unit": "day", "enabled": true },
 def pythag(pt1, pt2):
     a_sq = (pt2[0] - pt1[0]) ** 2
     b_sq = (pt2[1] - pt1[1]) ** 2

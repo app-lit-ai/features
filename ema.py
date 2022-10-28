@@ -3,14 +3,6 @@ import numpy as np
 
 #TODO quadruple check for lookahead bias
 
-def interrogate():
-    return [
-        { "name": "rate", "type": "number" },
-        { "name": "count", "type": "number" },
-        { "name": "size", "type": "number" },
-        { "name": "unit", "type": "string" }
-    ]
-
 def numpy_ewma_vectorized_v2(data, window):
 
     alpha = 2 /(window + 1.0)
@@ -30,6 +22,18 @@ def numpy_ewma_vectorized_v2(data, window):
 
 LAST_DATETIME, LAST_SAMPLE = {}, {}
 def feature(adapter, index, vars=None, other_features=None):
+    """
+    Parameters
+    ----------
+    rate : number
+        When calculating across a window, the number of bars to include in that window; e.g. [10]-day moving average for 30 days 
+    count : number
+        The number of bars; e.g. [10] 1-second bars
+    size : number
+        The number of units in each bar; e.g. 10 [1]-second bars
+    unit : string
+        Either hour, minute, or second; e.g. 10 1-[second] bars
+    """
     global LAST_DATETIME, LAST_SAMPLE
     unit = vars['unit'] or 'sec'
     dt = adapter.get_timestamp(index)

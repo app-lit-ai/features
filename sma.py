@@ -6,14 +6,6 @@ from numpy.lib.stride_tricks import sliding_window_view
 
 #TODO quadruple check for lookahead bias
 
-def interrogate():
-    return [
-        { "name": "rate", "type": "number" },
-        { "name": "count", "type": "number" },
-        { "name": "size", "type": "number" },
-        { "name": "unit", "type": "string" }
-    ]
-
 def calc_rsi(over: np.ndarray, fn_roll: Callable, window_size) -> pd.Series:
     over = pd.Series(over)
     delta = over.diff()
@@ -29,6 +21,18 @@ def calc_rsi(over: np.ndarray, fn_roll: Callable, window_size) -> pd.Series:
     return rsi
 
 def feature(adapter, index, vars=None, other_features=None):
+    """
+    Parameters
+    ----------
+    rate : number
+        When calculating across a window, the number of bars to include in that window; e.g. [10]-day moving average for 30 days 
+    count : number
+        The number of bars; e.g. [10] 1-second bars
+    size : number
+        The number of units in each bar; e.g. 10 [1]-second bars
+    unit : string
+        Either hour, minute, or second; e.g. 10 1-[second] bars
+    """
     rate = vars['rate'] or 20
     count = vars['count'] or 60
     size = vars['size'] or 1

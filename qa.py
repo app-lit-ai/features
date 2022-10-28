@@ -1,11 +1,12 @@
 import numpy as np
 
-def interrogate():
-    return [
-        { "name": "field", "type": "string" }
-    ]
-
 def feature(adapter, index, vars=None, other_features=None):
+    """
+    Parameters
+    ----------
+    field : string
+        The target ds_name name to validate.
+    """
     field = vars['field']
     nonzeros = np.count_nonzero(other_features[field])
     if nonzeros == 0:

@@ -1,11 +1,12 @@
 import numpy as np
 
-def interrogate():
-    return [
-        { "name": "count", "type": "number" }
-    ]
-
 def feature(adapter, index, vars=None, other_features=None):
+    """
+    Parameters
+    ----------
+    count : number
+        The number of ticks.
+    """
     count = vars['count'] or 64
     df = adapter.get_dataframe(index, count)
     if len(df) < count:
