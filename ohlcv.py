@@ -1,17 +1,17 @@
+"""
+Parameters
+----------
+count : number
+    The number of bars; e.g. [10] 1-second bars
+size : number
+    The number of units in each bar; e.g. 10 [1]-second bars
+unit : string
+    Either hour, minute, or second; e.g. 10 1-[second] bars
+"""
 #TODO quadruple check for lookahead bias
 
 LAST_DATETIME, LAST_SAMPLE = {}, {}
 def feature(adapter, index, vars=None, other_features=None):
-    """
-    Parameters
-    ----------
-    count : number
-        The number of bars; e.g. [10] 1-second bars
-    size : number
-        The number of units in each bar; e.g. 10 [1]-second bars
-    unit : string
-        Either hour, minute, or second; e.g. 10 1-[second] bars
-    """
     global LAST_DATETIME, LAST_SAMPLE
     unit = vars['unit'] or 'sec'
     dt = adapter.get_timestamp(index)

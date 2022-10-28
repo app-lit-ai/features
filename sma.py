@@ -1,3 +1,15 @@
+"""
+Parameters
+----------
+rate : number
+    When calculating across a window, the number of bars to include in that window; e.g. [10]-day moving average for 30 days 
+count : number
+    The number of bars; e.g. [10] 1-second bars
+size : number
+    The number of units in each bar; e.g. 10 [1]-second bars
+unit : string
+    Either hour, minute, or second; e.g. 10 1-[second] bars
+"""
 import logging
 from typing import Callable
 import numpy as np
@@ -21,18 +33,6 @@ def calc_rsi(over: np.ndarray, fn_roll: Callable, window_size) -> pd.Series:
     return rsi
 
 def feature(adapter, index, vars=None, other_features=None):
-    """
-    Parameters
-    ----------
-    rate : number
-        When calculating across a window, the number of bars to include in that window; e.g. [10]-day moving average for 30 days 
-    count : number
-        The number of bars; e.g. [10] 1-second bars
-    size : number
-        The number of units in each bar; e.g. 10 [1]-second bars
-    unit : string
-        Either hour, minute, or second; e.g. 10 1-[second] bars
-    """
     rate = vars['rate'] or 20
     count = vars['count'] or 60
     size = vars['size'] or 1

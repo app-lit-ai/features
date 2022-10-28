@@ -1,20 +1,20 @@
+"""
+Parameters
+----------
+type : string
+    Long or short.
+risk : number
+    The amount of risk, in dollars, before a trade is stopped out.
+reward : number
+    The amount of reward, in dollars, before a trade is closed as a win.
+horizon : number
+    The amount of time, in seconds, until the trade times out and is forced close as a loss.
+"""
 import numpy as np
 
 SHAKE_TO_SECONDS = 10e8
     
 def feature(adapter, index, vars=None, other_features=None):
-    """
-    Parameters
-    ----------
-    type : string
-        Long or short.
-    risk : number
-        The amount of risk, in dollars, before a trade is stopped out.
-    reward : number
-        The amount of reward, in dollars, before a trade is closed as a win.
-    horizon : number
-        The amount of time, in seconds, until the trade times out and is forced close as a loss.
-    """
     type = vars.get('type') # long or short
     risk, reward = vars.get('risk'), vars.get('reward')
     horizon = vars.get('horizon')

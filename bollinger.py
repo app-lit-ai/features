@@ -1,3 +1,15 @@
+"""
+Parameters
+----------
+rate : number
+    When calculating across a window, the number of bars to include in that window; e.g. [10]-day moving average for 30 days 
+count : number
+    The number of bars; e.g. [10] 1-second bars
+size : number
+    The number of units in each bar; e.g. 10 [1]-second bars
+unit : string
+    Either hour, minute, or second; e.g. 10 1-[second] bars
+"""
 import logging
 import numpy as np
 import numpy as np
@@ -6,18 +18,6 @@ from numpy.lib.stride_tricks import sliding_window_view
 #TODO quadruple check for lookahead bias
 
 def feature(adapter, index, vars=None, other_features=None):
-    """
-    Parameters
-    ----------
-    rate : number
-        When calculating across a window, the number of bars to include in that window; e.g. [10]-day moving average for 30 days 
-    count : number
-        The number of bars; e.g. [10] 1-second bars
-    size : number
-        The number of units in each bar; e.g. 10 [1]-second bars
-    unit : string
-        Either hour, minute, or second; e.g. 10 1-[second] bars
-    """
     rate = vars['rate'] or 20
     count = vars['count'] or 60
     size = vars['size'] or 1
