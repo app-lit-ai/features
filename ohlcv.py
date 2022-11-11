@@ -8,14 +8,15 @@ size : number
 unit : string
     Either hour, minute, or second; e.g. 10 1-[second] bars
 """
-#TODO quadruple check for lookahead bias
+
+from lit.data.utils import format_datetime
 
 LAST_DATETIME, LAST_SAMPLE = {}, {}
 def feature(adapter, index, vars=None, other_features=None):
     global LAST_DATETIME, LAST_SAMPLE
     unit = vars['unit'] or 'sec'
     dt = adapter.get_timestamp(index)
-    datetime = adapter.format_datetime(dt, unit)
+    datetime = format_datetime(dt, unit)
     if unit in LAST_DATETIME and datetime == LAST_DATETIME[unit]:
         return LAST_SAMPLE[unit]
 
