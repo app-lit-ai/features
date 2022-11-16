@@ -39,8 +39,11 @@ def feature(adapter, index, vars=None, other_features=None):
     LAST_DATETIME[unit], LAST_SAMPLE[unit] = datetime, feature.sample
 
     return feature.sample[:]
-
 feature.sample = None
+
+def stream():
+    last_ohlc_data = feature.sample[-1]
+    yield (b'o', last_ohlc_data[0]), (b'h', last_ohlc_data[1]), (b'l', last_ohlc_data[2]), (b'c', last_ohlc_data[3])
 
 def main():
     from lit.data import loader
