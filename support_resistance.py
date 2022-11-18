@@ -74,7 +74,7 @@ def feature(adapter, index, vars=None, other_features=None):
 
     count, size, unit = 100, 1, "day"
     data_day = adapter.get_bars(index, count, unit, size)
-    if len(data_day) < count:
+    if len(data_day) == 0 or len(data_day) < count:
         return []
     prices = data_day[:, 3]
 

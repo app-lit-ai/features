@@ -30,7 +30,7 @@ def feature(adapter, index, vars=None, other_features=None):
 
     count, size, unit = 50, 1, "day"
     data_day = adapter.get_bars(index, count+(count-1), unit, size)
-    if data_day.shape[0] < count+(count-1):
+    if len(data_day) == 0 or data_day.shape[0] < count+(count-1):
         return []
 
     window = sliding_window_view(data_day[:,3], window_shape=50, axis=0)
