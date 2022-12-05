@@ -50,7 +50,7 @@ def find_tick_stop(starting_pos, next_price, eof, target, stop_out):
 def find_long_stop(adapter, target, stop, current_position, end_of_horizon):
     next_price = lambda x: adapter.get_price(x)
     eof = lambda x: x + 1 >= len(adapter)
-    get_time = lambda x: adapter.get_timestamp(x)
+    get_time = lambda x: adapter.get_timestamp(x).value
 
     while not eof(current_position):
         if get_time(current_position) >= end_of_horizon:
@@ -69,7 +69,7 @@ def find_long_stop(adapter, target, stop, current_position, end_of_horizon):
 def find_short_stop(adapter, target, stop, current_position, end_of_horizon):
     next_price = lambda x: adapter.get_price(x)
     eof = lambda x: x + 1 >= len(adapter)
-    get_time = lambda x: adapter.get_timestamp(x)
+    get_time = lambda x: adapter.get_timestamp(x).value
 
     while not eof(current_position):
         if get_time(current_position) >= end_of_horizon:
@@ -86,7 +86,7 @@ def find_short_stop(adapter, target, stop, current_position, end_of_horizon):
     return [0.0]
 
 def is_long_rr_v8(adapter, sample_index, risk, reward, horizon, slippage=0):
-    start_time = adapter.get_timestamp(sample_index) # timestamp of most recent tick
+    start_time = adapter.get_timestamp(sample_index).value # timestamp of most recent tick
     time_horizon = horizon * SHAKE_TO_SECONDS
     stop_time = start_time + time_horizon
     start_price = adapter.get_price(sample_index) + slippage
@@ -175,7 +175,7 @@ def is_long_rr_v8(adapter, sample_index, risk, reward, horizon, slippage=0):
     return find_long_stop(adapter, target, stop_out, accelerator_index, stop_time)
 
 def is_short_rr_v8(adapter, sample_index, risk, reward, horizon, slippage=0):
-    start_time = adapter.get_timestamp(sample_index) # timestamp of most recent tick
+    start_time = adapter.get_timestamp(sample_index).value # timestamp of most recent tick
     time_horizon = horizon * SHAKE_TO_SECONDS
     stop_time = start_time + time_horizon
     start_price = adapter.get_price(sample_index) - slippage
