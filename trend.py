@@ -6,23 +6,26 @@ LAST_DATETIME, LAST_SAMPLE = None, None
 def feature(adapter, index, vars=None, other_features=None):
     global LAST_DATETIME, LAST_SAMPLE
     dt = adapter.get_timestamp(index)
-    datetime = f"{dt.year}-{dt.month}-{dt.day}T{dt.hour}:{dt.minute}"
+    datetime = dt.strftime('%Y-%m-%d %H:%M')
     if datetime == LAST_DATETIME:
-        return LAST_SAMPLE
+        return LAST_SAMPLE[:]
 
     count, size, unit = 50, 1, "day"
     data_day = adapter.get_bars(index, count+(count-1), unit, size)
     if len(data_day) == 0 or data_day.shape[0] < count+(count-1):
+        LAST_DATETIME, LAST_SAMPLE = datetime, []
         return []
 
     count, size, unit = 24, 1, "hour"
     data_hour = adapter.get_bars(index, count+(count-1), unit, size)
     if len(data_hour) == 0 or data_hour.shape[0] < count+(count-1):
+        LAST_DATETIME, LAST_SAMPLE = datetime, []
         return []
 
     count, size, unit = 60, 1, "min"
     data_min = adapter.get_bars(index, count+(count-1), unit, size)
     if len(data_min) == 0 or data_min.shape[0] < count+(count-1):
+        LAST_DATETIME, LAST_SAMPLE = datetime, []
         return []
 
     window = sliding_window_view(data_day[:,3], window_shape=50, axis=0)
@@ -48,11 +51,12 @@ def feature(adapter, index, vars=None, other_features=None):
         fit(sma_60min), fit(sma_24hour), fit(sma_5day), fit(sma_10day), fit(sma_20day), fit(sma_50day)
     ]).flatten()
 
+    LAST_DATETIME, LAST_SAMPLE = datetime, feature.sample[:]
+
     if np.isnan(feature.sample[:]).any():
         logging.warn(f"Found NaN in trend at index {index}.")
+        LAST_SAMPLE = []
         return []
-
-    LAST_DATETIME, LAST_SAMPLE = datetime, feature.sample
 
     return feature.sample[:]
 

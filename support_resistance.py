@@ -75,6 +75,7 @@ def feature(adapter, index, vars=None, other_features=None):
     count, size, unit = 100, 1, "day"
     data_day = adapter.get_bars(index, count, unit, size)
     if len(data_day) == 0 or len(data_day) < count:
+        LAST_DATE, LAST_SAMPLE = date, []
         return []
     prices = data_day[:, 3]
 
@@ -86,6 +87,7 @@ def feature(adapter, index, vars=None, other_features=None):
         ]).flatten()# - price_offset
     except ValueError:
         # either support or resistance is empty
+        LAST_DATE, LAST_SAMPLE = date, []
         return []
 
     LAST_DATE, LAST_SAMPLE = date, feature.sample
