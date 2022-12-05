@@ -132,7 +132,7 @@ def is_long_rr_v8(adapter, sample_index, risk, reward, horizon, slippage=0):
     accelerator_index = end_of_this_block
 
     end_of_this_block = accelerator_index + (1000 - (accelerator_index % 1000))
-    if end_of_this_block >= adapter:
+    if end_of_this_block >= len(adapter):
         return find_long_stop(adapter, target, stop_out, accelerator_index, stop_time)
     if p_1000[accelerator_index//1000,0] >= target or p_1000[accelerator_index//1000,1] <= stop_out:
         found = True
