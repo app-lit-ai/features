@@ -24,9 +24,9 @@ def feature(adapter, index, vars=None, other_features=None):
     size = vars['size'] or 1
 
     data = adapter.get_bars(index, count, unit, size).copy()
-    data = data[:,:-1] # drop the reuters vwap to avoid accidentally using it later
     if len(data) != count:
         return []
+    data = data[:,:-1] # drop the reuters vwap to avoid accidentally using it later
 
     # price_offset = data[-1,3]
     # data[:, :4] -= price_offset # price_open, price_high, price_low, price_close
