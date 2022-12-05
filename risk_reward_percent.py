@@ -267,7 +267,16 @@ def is_short_rr_v8(adapter, sample_index, risk, reward, horizon, slippage=0):
 def main():
     from lit.data import loader
     rds = {
-        "adapter": { "name": "reuters", "path": "/data/raw/TSLA.O_2010.csv" },
+            "adapter": { 
+            "name": "reuters_multi", 
+            "paths": [
+                "/data/raw/TSLA.O_2010.csv",
+                "/data/raw/TSLA.O_2011.csv",
+                "/data/raw/TSLA.O_2012.csv"
+            ],
+            "resolution": 1,
+            "num-chunks": 80
+        },
         "features": [ { "type": "long", "risk": 0.005, "reward": 0.005, "horizon": 900 } ]
     }
     adapter = loader.load_adapter(json=rds)
