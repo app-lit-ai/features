@@ -26,6 +26,8 @@ def feature(adapter, index, vars=None, other_features=None):
     data = adapter.get_bars(index, count, unit, size).copy()
     if len(data) != count:
         return []
+
+    #TODO this should be moved to the adapter for reuters, 
     data = data[:,:-1] # drop the reuters vwap to avoid accidentally using it later
 
     # price_offset = data[-1,3]
