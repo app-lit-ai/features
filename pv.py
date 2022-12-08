@@ -13,13 +13,13 @@ def feature(adapter, index, vars=None, other_features=None):
         return []
 
     if feature.sample is None:
-        feature.sample = df[['Price', 'Volume']].astype(np.float32).values
+        feature.sample = df[['mdEntryPx', 'mdEntrySize']].astype(np.float32).values
     else:
-        feature.sample[:] = df[['Price', 'Volume']].astype(np.float32).values
+        feature.sample[:] = df[['mdEntryPx', 'mdEntrySize']].astype(np.float32).values
 
     #price_offset = feature.sample[-1][0]
-    feature.sample[:,0] = feature.sample[:,0]# - price_offset
-    return feature.sample[:]
+#    feature.sample[:,0] = feature.sample[:,0]# - price_offset
+    return feature.sample[:,0]
     
 feature.sample = None
 
